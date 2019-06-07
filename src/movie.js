@@ -1,19 +1,30 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './movie.css';
 
-function Movie() {
-    return (
+function Movie(props) {
+
+    // To check type of props
+    let propTypes = {
+        title: PropTypes.string.isRequired,
+        poster: PropTypes.string.isRequired
+    }
+    return (        
         <div>
-            <MoviePoster/>
-            <h1>Hello this is a movie</h1>
+            <MoviePoster poster={props.poster}/>
+            <h1>{props.title}</h1>
         </div>
     );
 }
 
-function MoviePoster() {
+function MoviePoster(props) {
+    // To check type of props
+    let propTypes = {
+        poster: PropTypes.string.isRequired
+    }
     return (
-        <img src="http://img.cgv.co.kr/Movie/Thumbnail/Poster/000081/81847/81847_1000.jpg"/>
-    );
+        <img src={props.poster} alt="Movie Poster"/>
+    ); 
 }
 
 export default Movie;
