@@ -1,42 +1,63 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import './movie.css';
+import { symbols } from 'ansi-colors';
+import LinesEllipsis from 'react-lines-ellipsis'
 
-class Movie extends Component {
 
-    static propTypes = {
-             title: PropTypes.string.isRequired,
-             poster: PropTypes.string.isRequired
-    }
-
-    render(){
-        return (        
-            <div>
-                <MoviePoster poster={this.props.poster}/>
-                <h1>{this.props.title}</h1>
+function Movie({title, poster, genres, synopsis}){
+    return(
+        <div className="Movie">
+            <div className="Movie__Column">
+            <MoviePoster poster={poster} alt={title}/>
+            </div>  
+            <div className="Movie__Column">
+                <h1>{title}</h1>
+                <div className="Movie__Genres">
+                    {genres.map((genre, index) => <MovieGenre genre={genre} key={index}/>)}
+                </div>
+                <p className="Moive__Synopsis">
+                <LinesEllipsis
+                    text={synopsis}
+                    maxLine='3'
+                    ellipsis='...'
+                    trimRight
+                    basedOn='letters'
+                    />    
+                </p>
             </div>
-        );
-    }
-    
+        </div>
+    );
 }
 
-// To check type of props in Functional Component : 타입과 필수인지 아닌 지를 확인하여 체크해줌
-// Movie.propTypes = {
-//     title: PropTypes.string.isRequired,
-//     poster: PropTypes.string.isRequired
-// }
 
-class MoviePoster extends Component {
-    static propTypes = {
-        poster: PropTypes.string.isRequired
-    }
+function MoviePoster({poster, alt}){
+    return (
+        <img src={poster} alt={alt} title={alt} className="Movie__Poster"/>
+    );
+}
 
-    render(){
-        return (
-            <img src={this.props.poster} alt="Movie Poster"/>
-        );
-    }
-     
+function MovieGenre({genre}){
+    return (
+        <span className="Movie__Gerne">{genre} </span>
+    );
+}
+
+
+Movie.propTypes = {
+    title: PropTypes.string.isRequired,
+    poster: PropTypes.string.isRequired,
+    genres: PropTypes.array.isRequired,
+    synopsis: PropTypes.shape.isRequired
+}
+
+MoviePoster.propTypes = {
+    poster: PropTypes.string.isRequired,
+    alt: PropTypes.string.isRequired
+}
+
+MovieGenre.propTypes = {
+    genre: PropTypes.string.isRequired
 }
 
 export default Movie;
@@ -58,3 +79,20 @@ export default Movie;
     - https://boxfoxs.tistory.com/395
     - https://medium.com/@minoo/react-stateless-functional-components-%EC%9A%B0%EB%A6%AC%EA%B0%80-%EA%B0%84%EA%B3%BC%ED%95%98%EA%B3%A0-%EC%9E%88%EB%8A%94-9%EA%B0%80%EC%A7%80-ecef2ef73d79
 */ 
+
+// 1. Class Component 
+/*
+class MoviePoster extends Component {
+    static propTypes = {
+        poster: PropTypes.string.isRequired
+    }
+
+    render(){
+        return (
+            <img src={this.props.poster} alt="Movie Poster"/>
+        );
+    }
+     
+}
+*/
+// 2. Functional Component : 위와 같이 출력됨, tate/redner/life cycle없음, 온리 props, 단순 return

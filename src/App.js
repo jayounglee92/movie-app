@@ -10,83 +10,55 @@ class App extends Component {
   // Render Flow : componentWillMount() => render() => componentDidMount()
   // Update Flow : componentWillReceiveProps() => shouldComponentUpdate() old props과 new props가 다르면 true 반환함 => render() => compoenentDidMount()
 
-  // state = {
-  //   greeting: 'Hello!',
-  //   movies: [
-  //     {
-  //       title: "알라딘",
-  //       poster: "http://img.cgv.co.kr/Movie/Thumbnail/Poster/000081/81478/81478_185.jpg"
-  //     },
-  //     {
-  //       title: "기생충",
-  //       poster: "http://img.cgv.co.kr/Movie/Thumbnail/Poster/000081/81774/81774_185.jpg"
-  //     },
-  //     {
-  //       title: "액스맨-다크 피닉스",
-  //       poster: "http://img.cgv.co.kr/Movie/Thumbnail/Poster/000081/81218/81218_185.jpg"
-  //     },
-  //     {
-  //       title: "로켓맨",
-  //       poster: "http://img.cgv.co.kr/Movie/Thumbnail/Poster/000081/81847/81847_185.jpg"
-  //     },
-  //     {
-  //       title: '라라랜드',
-  //       poster: 'https://upload.wikimedia.org/wikipedia/en/a/ab/La_La_Land_%28film%29.png'
-  //     }
-  //   ]
-  // }
-
-  componentWillMount(){
-    console.log('will mount');
-  }
-
-  state = {
-
-  }
+  state = {}
 
   componentDidMount(){
-    console.log('did mount');
-    
-    setTimeout(() => {
-      this.setState({
-        movies: [
-          {
-            title: "알라딘",
-            poster: "http://img.cgv.co.kr/Movie/Thumbnail/Poster/000081/81478/81478_185.jpg"
-          },
-          {
-            title: "기생충",
-            poster: "http://img.cgv.co.kr/Movie/Thumbnail/Poster/000081/81774/81774_185.jpg"
-          },
-          {
-            title: "액스맨-다크 피닉스",
-            poster: "http://img.cgv.co.kr/Movie/Thumbnail/Poster/000081/81218/81218_185.jpg"
-          },
-          {
-            title: "로켓맨",
-            poster: "http://img.cgv.co.kr/Movie/Thumbnail/Poster/000081/81847/81847_185.jpg"
-          },
-          {
-            title: '라라랜드',
-            poster: 'https://upload.wikimedia.org/wikipedia/en/a/ab/La_La_Land_%28film%29.png'
-          }
-        ]     
-      })
-    }, 5000)
+    this._getMovies()
+  
+  }
+
+   _getMovies = async () => {
+    // await : 뒤 함수가 끝날 때 까지 기다림, async와 함께 써야함
+    const movies = await this._callApi()
+    // 위의 _callApi()가 완료 된 후에 실행됨
+    this.setState({
+      movies
+    })
+  }
+
+  _callApi = () => {
+    // fetch : xml http request 를 간단히 해 불러올 수 있음, 모던 자바스크립에서 가능
+    /* 
+      [ promise의 단계 ]
+      1. fetch :  ajax로 url 을 불러옴
+      2. then  :  불러온 것이 완료되면 실행됨
+      3. catch : fetch에서 에러가 있다면 실행됨
+     */
+    return fetch('https://yts.lt/api/v2/list_movies.json?sort_by=download_count')
+    .then(response => response.json())
+    .then(json => json.data.movies )
+    .catch(err => console.log(err))
+    // response 체크 후,  json으로 변환하고, 콘솔로 봄
   }
 
   _renderMovies = () => {
-    const movies = this.state.movies.map((movie, index) => {      
-      return <Movie title={movie.title} poster={movie.poster} key={index}/>
+    const movies = this.state.movies.map((movie) => {  
+      console.log(movie)    
+      return <Movie 
+        title={movie.title_english}
+        poster={movie.medium_cover_image}
+        key={movie.id}
+        genres={movie.genres}
+        synopsis={movie.synopsis}
+        />
     })
     return movies
   }
 
   render(){
-    console.log("did render");
-
+    const {movies} = this.state;
     return (
-      <div className="App">       
+      <div className={movies ? "App" : "App--loading"}>       
         {this.state.movies ?  this._renderMovies() : 'Loading'}  
       </div>
     );
